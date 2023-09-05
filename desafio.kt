@@ -1,21 +1,88 @@
-// [Template no Kotlin Playground](https://pl.kotl.in/WcteahpyN)
-
 enum class Nivel { BASICO, INTERMEDIARIO, DIFICIL }
 
-class Usuario
+interface Usuario {
+    val nome: String
+}
 
-data class ConteudoEducacional(var nome: String, val duracao: Int = 60)
+interface ConteudoEducacional {
+    val nome: String
+    val duracao: Int
+}
 
-data class Formacao(val nome: String, var conteudos: List<ConteudoEducacional>) {
+interface Formacao {
+    val nome: String
+    val conteudos: List<ConteudoEducacional>
 
-    val inscritos = mutableListOf<Usuario>()
-    
-    fun matricular(usuario: Usuario) {
-        TODO("Utilize o parâmetro $usuario para simular uma matrícula (usar a lista de $inscritos).")
+    val inscritos: MutableList<Usuario>
+
+    fun matricular(usuario: Usuario)
+}
+
+class BasicoUsuario(override val nome: String) : Usuario
+
+class IntermediarioUsuario(override val nome: String) : Usuario
+
+class DificilUsuario(override val nome: String) : Usuario
+
+class ConteudoBasico(override val nome: String, override val duracao: Int = 60) : ConteudoEducacional
+
+class ConteudoIntermediario(override val nome: String, override val duracao: Int = 60) : ConteudoEducacional
+
+class ConteudoDificil(override val nome: String, override val duracao: Int = 60) : ConteudoEducacional
+
+class FormacaoBasica(override val nome: String, override val conteudos: List<ConteudoBasico> = emptyList()) : Formacao {
+    override val inscritos: MutableList<Usuario> = mutableListOf()
+
+    override fun matricular(usuario: Usuario) {
+        if (usuario !is BasicoUsuario) {
+            throw IllegalArgumentException("Usuário deve ser do nível básico")
+        }
+
+        inscritos.add(usuario)
+    }
+}
+
+class FormacaoIntermediaria(override val nome: String, override val conteudos: List<ConteudoIntermediario> = emptyList()) : Formacao {
+    override val inscritos: MutableList<Usuario> = mutableListOf()
+
+    override fun matricular(usuario: Usuario) {
+        if (usuario !is IntermediarioUsuario) {
+            throw IllegalArgumentException("Usuário deve ser do nível intermediário")
+        }
+
+        inscritos.add(usuario)
+    }
+}
+
+class FormacaoDificil(override val nome: String, override val conteudos: List<ConteudoDificil> = emptyList()) : Formacao {
+    override val inscritos: MutableList<Usuario> = mutableListOf()
+
+    override fun matricular(usuario: Usuario) {
+        if (usuario !is DificilUsuario) {
+            throw IllegalArgumentException("Usuário deve ser do nível difícil")
+        }
+
+        inscritos.add(usuario)
     }
 }
 
 fun main() {
-    TODO("Analise as classes modeladas para este domínio de aplicação e pense em formas de evoluí-las.")
-    TODO("Simule alguns cenários de teste. Para isso, crie alguns objetos usando as classes em questão.")
+    val formacaoBasica = FormacaoBasica("Formação Básica")
+    val formacaoIntermediaria = FormacaoIntermediaria("Formação Intermediária")
+    val formacaoDificil = FormacaoDificil("Formação Difícil")
+
+    val usuarioBasico = BasicoUsuario("Fulano")
+    val usuarioIntermediario = IntermediarioUsuario("Beltrano")
+    val usuarioDificil = DificilUsuario("Ciclano")
+
+    formacaoBasica.matricular(usuarioBasico)
+    formacaoIntermediaria.matricular(usuarioIntermediario)
+    formacaoDificil.matricular(usuarioDificil)
+
+    println("Formação básica:")
+    println(formacaoBasica)
+    println("Formação intermediária:")
+    println(formacaoIntermediaria)
+    println("Formação difícil:")
+    println(formacaoDificil)
 }
